@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datos del votante</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    .hidden {
+      display: none;
+    }
+    .cartilla-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .candidato {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      transition: border 0.2s;
+      background: white;
+    }
+    .img-x-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-x-container img {
+      width: 80px;
+      height: 80px;
+      display: block;
+    }
+    .candidato.seleccionado {
+      border: 2px solid #4285f4;
+      background: #e3f0ff;
+    }
+    .marca-x {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: #d32f2f;
+      pointer-events: none;
+      font-weight: bold;
+      background: rgba(255,255,255,0.0);
+      z-index: 2;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      box-sizing: border-box;
+    }
+    @media (max-width: 600px) {
+      .cartilla-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cartilla Electoral</h1>
+    <!-- Logo o encabezado editable -->
+
+    <div id="formulario">
+      <label for="nombre">Nombre Completo:</label>
+      <input type="text" id="nombre" required />
+
+      <label for="dni">Número de DNI:</label>
+      <input type="number" id="dni" required />
+
+      <label for="telefono">Número de Teléfono:</label>
+      <input type="number" id="telefono" required />
+
+      <button onclick="mostrarCartilla()">Continuar</button>
+    </div>
+
+    <div id="cartilla" class="hidden">
+      <h2>Seleccione su candidato</h2>
+      <div class="cartilla-grid">
+        <div class="candidato" onclick="seleccionarCandidato(this, 'Juan Pérez')">
+          <div class="img-x-container">
+            <img src="https://via.placeholder.com/80" alt="Candidato Genérico" />
+            <span class="marca-x hidden">✗</span>
+          </div>
+          <div>
+            <strong>Juan Pérez</strong><br />
+            Partido Ficticio del Perú
+          </div>
+        </div>
+        <div class="candidato" onclick="seleccionarCandidato(this, 'Voto en blanco')">
+          <div class="img-x-container">
+            <img src="https://via.placeholder.com/80?text=Blanco" alt="Voto en blanco" />
+            <span class="marca-x hidden">✗</span>
+          </div>
+          <div>
+            <strong>Voto en blanco</strong><br />
+            No deseo votar por ninguna lista
+          </div>
+        </div>
+        <!-- Puedes agregar más candidatos aquí siguiendo el mismo formato -->
+      </div>
+      <button id="btnVotar" class="hidden" onclick="enviarVoto()">Votar</button>
+    </div>
+  </div>
+
+  <script>
+    function mostrarCartilla() {
+      const nombre = document.getElementById('nombre').value.trim();
+      const dni = document.getElementById('dni').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+
+      if (!nombre || !dni || !telefono) {
+        alert('Por favor complete todos los campos');
+        return;
+      }
+
+      // Guardamos los datos en localStorage para usarlos al votar
+      localStorage.setItem('votante', JSON.stringify({ nombre, dni, telefono }));
+
+      document.getElementById('formulario').classList.add('hidden');
+      document.getElementById('cartilla').classList.remove('hidden');
+    }
+
+    let candidatoSeleccionado = null;
+
+    function seleccionarCandidato(element, candidato) {
+      document.querySelectorAll('.candidato').forEach(div => {
+        div.classList.remove('seleccionado');
+        div.querySelector('.marca-x').classList.add('hidden');
+      });
+      element.classList.add('seleccionado');
+      element.querySelector('.marca-x').classList.remove('hidden');
+      candidatoSeleccionado = candidato;
+      document.getElementById('btnVotar').classList.remove('hidden');
+    }
+
+    function enviarVoto() {
+      if (!candidatoSeleccionado) {
+        alert('Seleccione un candidato o voto en blanco.');
+        return;
+      }
+      const datos = JSON.parse(localStorage.getItem('votante'));
+      const fechaHora = new Date().toLocaleString();
+
+      fetch('https://script.google.com/macros/s/AKfycbwvcNViQecaQxA6SnyNgjsjAg5zEvQaeK311JmRU_bNdDxGqQA-XgROsVo5kxBHTQea/exec', {
+        method: 'POST',
+        body: JSON.stringify({
+          nombre: datos.nombre,
+          dni: datos.dni,
+          telefono: datos.telefono,
+          voto: candidatoSeleccionado,
+          fechaHora
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.text())
+      .then(data => {
+        alert('Gracias por votar. Su elección ha sido registrada.');
+        localStorage.removeItem('votante');
+        location.reload();
+      })
+      .catch(error => {
+        alert('Error al registrar el voto.');
+      });
+    }
+  </script>
+</body>
+</html>
