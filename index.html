@@ -271,6 +271,8 @@
         "Elección": candidatoSeleccionado
       };
 
+      console.log('Enviando datos:', votoData); // Para debug
+
       // Enviar a SheetDB
       fetch(SHEETDB_URL, {
         method: 'POST',
