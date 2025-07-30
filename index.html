@@ -82,6 +82,10 @@
       cursor: pointer;
       margin-top: 1rem;
     }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
     label {
       display: block;
       margin-top: 1rem;
@@ -91,6 +95,18 @@
       padding: 0.5rem;
       margin-top: 0.3rem;
       box-sizing: border-box;
+    }
+    .loading {
+      display: inline-block;
+      margin-left: 10px;
+    }
+    .error {
+      color: #d32f2f;
+      margin-top: 10px;
+    }
+    .success {
+      color: #2e7d32;
+      margin-top: 10px;
     }
     @media (max-width: 600px) {
       .cartilla-grid {
@@ -111,10 +127,10 @@
       <label for="dni">Número de DNI:</label>
       <input type="number" id="dni" required />
 
-      <label for="telefono">Número de Teléfono:</label>
-      <input type="number" id="telefono" required />
+
 
       <button onclick="mostrarCartilla()">Continuar</button>
+      <div id="mensaje-error" class="error hidden"></div>
     </div>
 
     <div id="cartilla" class="hidden">
@@ -142,26 +158,69 @@
         </div>
         <!-- Puedes agregar más candidatos aquí siguiendo el mismo formato -->
       </div>
-      <button id="btnVotar" class="hidden" onclick="enviarVoto()">Votar</button>
+      <button id="btnVotar" class="hidden" onclick="enviarVoto()">
+        <span id="btn-text">Votar</span>
+        <span id="loading" class="loading hidden">Enviando...</span>
+      </button>
+      <div id="mensaje-voto" class="hidden"></div>
     </div>
   </div>
 
   <script>
+    // URL de tu API de SheetDB
+    const SHEETDB_URL = 'https://sheetdb.io/api/v1/0tpotnb4kr55v';
+
     function mostrarCartilla() {
       const nombre = document.getElementById('nombre').value.trim();
       const dni = document.getElementById('dni').value.trim();
-      const telefono = document.getElementById('telefono').value.trim();
+      const mensajeError = document.getElementById('mensaje-error');
 
-      if (!nombre || !dni || !telefono) {
-        alert('Por favor complete todos los campos');
+      // Limpiar mensajes previos
+      mensajeError.classList.add('hidden');
+
+      if (!nombre || !dni) {
+        mostrarError('Por favor complete todos los campos');
         return;
       }
 
-      // Guardamos los datos en localStorage para usarlos al votar
-      localStorage.setItem('votante', JSON.stringify({ nombre, dni, telefono }));
+      // Validar DNI (8 dígitos en Perú)
+      if (dni.length !== 8) {
+        mostrarError('El DNI debe tener 8 dígitos');
+        return;
+      }
 
-      document.getElementById('formulario').classList.add('hidden');
-      document.getElementById('cartilla').classList.remove('hidden');
+      // Verificar si el DNI ya votó
+      verificarDNI(dni, () => {
+        // Guardamos los datos temporalmente
+        sessionStorage.setItem('votante', JSON.stringify({ nombre, dni }));
+        
+        document.getElementById('formulario').classList.add('hidden');
+        document.getElementById('cartilla').classList.remove('hidden');
+      });
+    }
+
+    function mostrarError(mensaje) {
+      const mensajeError = document.getElementById('mensaje-error');
+      mensajeError.textContent = mensaje;
+      mensajeError.classList.remove('hidden');
+    }
+
+    function verificarDNI(dni, callback) {
+      // Verificar si el DNI ya existe en la base de datos
+      fetch(`${SHEETDB_URL}/search?DNI=${dni}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length > 0) {
+            mostrarError('Este DNI ya ha registrado un voto');
+          } else {
+            callback();
+          }
+        })
+        .catch(error => {
+          console.error('Error al verificar DNI:', error);
+          // Continuar aunque haya error en la verificación
+          callback();
+        });
     }
 
     let candidatoSeleccionado = null;
@@ -182,32 +241,90 @@
         alert('Seleccione un candidato o voto en blanco.');
         return;
       }
-      const datos = JSON.parse(localStorage.getItem('votante'));
-      const fechaHora = new Date().toLocaleString();
 
-      fetch('https://script.google.com/macros/s/AKfycbwvcNViQecaQxA6SnyNgjsjAg5zEvQaeK311JmRU_bNdDxGqQA-XgROsVo5kxBHTQea/exec', {
+      const datos = JSON.parse(sessionStorage.getItem('votante'));
+      const fechaHora = new Date().toLocaleString('es-PE', {
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+
+      // Mostrar estado de carga
+      const btnVotar = document.getElementById('btnVotar');
+      const btnText = document.getElementById('btn-text');
+      const loading = document.getElementById('loading');
+      
+      btnVotar.disabled = true;
+      btnText.classList.add('hidden');
+      loading.classList.remove('hidden');
+
+      // Preparar datos para SheetDB (usando las columnas exactas de tu Sheet)
+      const votoData = {
+        "DNI": datos.dni,
+        "Nombre Completo": datos.nombre,
+        "FechaHora": fechaHora,
+        "Elección": candidatoSeleccionado
+      };
+
+      // Enviar a SheetDB
+      fetch(SHEETDB_URL, {
         method: 'POST',
-        body: JSON.stringify({
-          nombre: datos.nombre,
-          dni: datos.dni,
-          telefono: datos.telefono,
-          voto: candidatoSeleccionado,
-          fechaHora
-        }),
         headers: {
+          'Accept': 'application/json',
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify(votoData)
       })
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
-        alert('Gracias por votar. Su elección ha sido registrada.');
-        localStorage.removeItem('votante');
-        location.reload();
+        mostrarMensajeExitoso();
+        limpiarDatos();
       })
       .catch(error => {
-        alert('Error al registrar el voto.');
+        console.error('Error:', error);
+        mostrarMensajeError();
+      })
+      .finally(() => {
+        // Restaurar botón
+        btnVotar.disabled = false;
+        btnText.classList.remove('hidden');
+        loading.classList.add('hidden');
       });
     }
+
+    function mostrarMensajeExitoso() {
+      const mensaje = document.getElementById('mensaje-voto');
+      mensaje.innerHTML = '<div class="success">✓ ¡Gracias por votar! Su elección ha sido registrada correctamente.</div>';
+      mensaje.classList.remove('hidden');
+      
+      // Ocultar cartilla después de 3 segundos y reiniciar
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    }
+
+    function mostrarMensajeError() {
+      const mensaje = document.getElementById('mensaje-voto');
+      mensaje.innerHTML = '<div class="error">✗ Error al registrar el voto. Por favor intente nuevamente.</div>';
+      mensaje.classList.remove('hidden');
+    }
+
+    function limpiarDatos() {
+      sessionStorage.removeItem('votante');
+      candidatoSeleccionado = null;
+    }
+
+    // Prevenir el uso de localStorage que mencionaste en el código original
+    // En su lugar usamos sessionStorage que se limpia al cerrar la pestaña
   </script>
 </body>
 </html>
