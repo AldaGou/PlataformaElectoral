@@ -243,15 +243,16 @@
       }
 
       const datos = JSON.parse(sessionStorage.getItem('votante'));
-      const fechaHora = new Date().toLocaleString('es-PE', {
-        timeZone: 'America/Lima',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
+      // Crear fecha en formato día/mes/año hora:minuto:segundo
+      const now = new Date();
+      const dia = now.getDate().toString().padStart(2, '0');
+      const mes = (now.getMonth() + 1).toString().padStart(2, '0');
+      const año = now.getFullYear();
+      const hora = now.getHours().toString().padStart(2, '0');
+      const minuto = now.getMinutes().toString().padStart(2, '0');
+      const segundo = now.getSeconds().toString().padStart(2, '0');
+      
+      const fechaHora = `${dia}/${mes}/${año} ${hora}:${minuto}:${segundo}`;
 
       // Mostrar estado de carga
       const btnVotar = document.getElementById('btnVotar');
