@@ -3,246 +3,517 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Datos del votante</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>SISTEMA DE VOTACIÓN ELECTRÓNICA</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 2rem;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 2rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-    }
-    .hidden {
-      display: none;
-    }
-    .cartilla-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    .candidato {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      position: relative;
-      cursor: pointer;
-      transition: border 0.2s;
-      background: white;
-    }
-    .img-x-container {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      margin-right: 1rem;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .img-x-container img {
-      width: 80px;
-      height: 80px;
-      display: block;
-    }
-    .candidato.seleccionado {
-      border: 2px solid #4285f4;
-      background: #e3f0ff;
-    }
-    .marca-x {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-      color: #d32f2f;
-      pointer-events: none;
-      font-weight: bold;
-      background: rgba(255,255,255,0.0);
-      z-index: 2;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background-color: #4285f4;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-    }
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.3rem;
+    * {
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
     }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cedula-container {
+      background: white;
+      width: 600px;
+      max-width: 95vw;
+      border: 3px solid #000;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    /* Distrito */
+    .distrito-header {
+      background: #000;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    /* Instrucciones */
+    .instructions {
+      background: #d0d0d0;
+      padding: 8px 15px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* Secciones */
+    .section {
+      padding: 20px;
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* Formularios */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 2px solid #000;
+      font-size: 14px;
+    }
+
+    .btn-primary,
+.btn-secondary {
+  background: #333;
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  background: #000;
+}
+
+    /* Datos del votante */
+    .voter-info {
+      background: #fff; /* mismo fondo que la página */
+      border: 2px solid #000; /* mismo borde que la bandera y los cuadros */
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 8px;
+      font-family: Arial, sans-serif; /* igual que la web */
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1); /* igual que los títulos */
+    }
+
+    .voter-info h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #000; /* para que combine con el título */
+      font-weight: bold;
+      border-bottom: 2px solid #000; /* línea como en la cartilla */
+      padding-bottom: 5px;
+    }
+
+    .voter-info p {
+      margin: 8px 0;
+      font-size: 15px;
+      color: #333; /* un poco más suave que negro */
+    }
+
+    .voter-info strong {
+      color: #000;
+      font-weight: bold;
+    }
+
+    /* Lista de candidatos */
+    .candidate-item {
+      display: flex;
+      align-items: center;
+      background: #e6f3ff;
+      border: 2px solid #000;
+      margin-bottom: 2px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .candidate-item:hover {
+      background: #cce7ff;
+    }
+
+    .candidate-item.selected {
+      background: #b3d9ff;
+      border-color: #0066cc;
+    }
+
+    .candidate-name {
+      flex: 1;
+      font-weight: bold;
+      font-size: 14px;
+      padding-left: 10px;
+    }
+
+    .candidate-symbol {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-right: 15px;
+      background: white;
+      position: relative;
+    }
+
+    /* Marca X */
+    .vote-mark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 35px;
+      color: #e53e3e;
+      font-weight: bold;
+      display: none;
+      z-index: 10;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .candidate-item.selected .vote-mark {
+      display: block;
+    }
+
+    /* Botón votar */
+    .btn-votar {
+      background: #228B22;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .btn-votar.show {
+      display: block;
+    }
+
+    .btn-votar:hover {
+      background: #006400;
+    }
+
+    .error-message {
+      color: #e53e3e;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .success-message {
+      color: #28a745;
+      font-size: 14px;
+      text-align: center;
+      margin: 10px 0;
+    }
+
     .loading {
-      display: inline-block;
-      margin-left: 10px;
+      text-align: center;
+      padding: 20px;
+      display: none;
     }
-    .error {
-      color: #d32f2f;
-      margin-top: 10px;
-    }
-    .success {
-      color: #2e7d32;
-      margin-top: 10px;
-    }
-    @media (max-width: 600px) {
-      .cartilla-grid {
-        grid-template-columns: 1fr;
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .main-header {
+        flex-direction: column;
+        text-align: center;
       }
+
+      .logo-left, .logo-onpe {
+        margin: 5px 0;
+      }
+
+      .cedula-container {
+        width: 100%;
+      }
+    }
+
+    /* Footer de créditos */
+    .footer-credits {
+      background: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 20px;
+    }
+
+    .footer-credits a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .footer-credits a:hover {
+      text-decoration: underline;
+    }
+
+    .credits-line {
+      margin: 3px 0;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Cartilla Electoral</h1>
-    <!-- Logo o encabezado editable -->
+  <div class="cedula-container">
+    <!-- Header principal -->
+    
 
-    <div id="formulario">
-      <label for="nombre">Nombre Completo:</label>
-      <input type="text" id="nombre" required />
-
-      <label for="dni">Número de DNI:</label>
-      <input type="number" id="dni" required />
-
-
-
-      <button onclick="mostrarCartilla()">Continuar</button>
-      <div id="mensaje-error" class="error hidden"></div>
+    <!-- Distrito -->
+    <div class="distrito-header">
+      SISTEMA DE VOTACIÓN ELECTRÓNICA
     </div>
 
-    <div id="cartilla" class="hidden">
-      <h2>Seleccione su candidato</h2>
-      <div class="cartilla-grid">
-        <div class="candidato" onclick="seleccionarCandidato(this, 'Juan Pérez')">
-          <div class="img-x-container">
-            <img src="https://via.placeholder.com/80" alt="Candidato Genérico" />
-            <span class="marca-x hidden">✗</span>
-          </div>
-          <div>
-            <strong>Juan Pérez</strong><br />
-            Partido Ficticio del Perú
-          </div>
-        </div>
-        <div class="candidato" onclick="seleccionarCandidato(this, 'Voto en blanco')">
-          <div class="img-x-container">
-            <img src="https://via.placeholder.com/80?text=Blanco" alt="Voto en blanco" />
-            <span class="marca-x hidden">✗</span>
-          </div>
-          <div>
-            <strong>Voto en blanco</strong><br />
-            No deseo votar por ninguna lista
-          </div>
-        </div>
-        <!-- Puedes agregar más candidatos aquí siguiendo el mismo formato -->
+    <!-- Instrucciones -->
+    <div class="instructions">
+      UNIDADES DE ILO Y CAJUNA
+    </div>
+
+    <!-- Sección 1: Ingreso de DNI -->
+    <div id="dni-section" class="section active">
+      <h3 style="text-align: center; margin-bottom: 20px;">VERIFICACIÓN DE VOTANTE</h3>
+      <div class="form-group">
+        <label for="dni">Número de DNI:</label>
+        <input type="number" id="dni" required maxlength="8" placeholder="Ingrese su DNI de 8 dígitos">
+        <div class="error-message" id="error-dni">DNI no válido o no autorizado para votar</div>
       </div>
-      <button id="btnVotar" class="hidden" onclick="enviarVoto()">
-        <span id="btn-text">Votar</span>
-        <span id="loading" class="loading hidden">Enviando...</span>
-      </button>
-      <div id="mensaje-voto" class="hidden"></div>
+      <div style="display: flex; justify-content: center;">
+  <button class="btn-primary" onclick="verificarDNI()">VERIFICAR VOTANTE</button>
+</div>
+<div id="mensaje-cargando" style="display: none; color: #555; margin-top: 10px;">Espere, validando...</div>
+    </div>
+
+    <!-- Sección 2: Confirmación de datos -->
+    <div id="confirmation-section" class="section">
+      <h3 style="text-align: center; margin-bottom: 20px;">CONFIRME SUS DATOS</h3>
+      <div class="voter-info" id="voter-info">
+        <!-- Los datos se llenarán dinámicamente -->
+      </div>
+      <p style="text-align: center; margin: 15px 0; font-weight: bold;">
+        ¿Son correctos sus datos?
+      </p>
+      <div style="display: flex; gap: 16px; margin-top: 15px;">
+  <button class="btn-primary" onclick="confirmarDatos()" style="flex: 1;">SÍ, ES CORRECTO</button>
+  <button class="btn-secondary" onclick="volverDNI()" style="flex: 1;">NO, VERIFICAR OTRA VEZ</button>
+</div>
+    </div>
+
+    <!-- Sección 3: Lista de candidatos -->
+    <div id="candidates-section" class="section">
+      <div class="instructions" style="background: #d0d0d0; margin: -20px -20px 20px -20px; padding: 8px 15px;">
+        Selecciona un candidato y haz clic en “EMITIR VOTO” para continuar.
+      </div>
+
+      <div class="candidate-item" onclick="seleccionarCandidato(this, 'MOVIMIENTO AMANECER DE NUEVO')">
+        <div class="candidate-symbol">
+          🏠
+          <div class="vote-mark">✗</div>
+        </div>
+        <div class="candidate-name">MOVIMIENTO AMANECER DE NUEVO</div>
+      </div>
+
+      <div class="candidate-item" onclick="seleccionarCandidato(this, 'MOVIMIENTO PARAÍSO ASTRAL')">
+        <div class="candidate-symbol">
+          📋
+          <div class="vote-mark">✗</div>
+        </div>
+        <div class="candidate-name">MOVIMIENTO PARAÍSO ASTRAL</div>
+      </div>
+
+      <div class="candidate-item" onclick="seleccionarCandidato(this, 'MOVIMIENTO VENDRÁN TIEMPOS MEJORES')">
+        <div class="candidate-symbol">
+          👑
+          <div class="vote-mark">✗</div>
+        </div>
+        <div class="candidate-name">MOVIMIENTO VENDRÁN TIEMPOS MEJORES</div>
+      </div>
+
+      <div class="candidate-item" onclick="seleccionarCandidato(this, 'PARTIDO POLÍTICO EN LA DISTANCIA')">
+        <div class="candidate-symbol">
+          🎮
+          <div class="vote-mark">✗</div>
+        </div>
+        <div class="candidate-name">PARTIDO POLÍTICO EN LA DISTANCIA</div>
+      </div>
+
+      <div class="candidate-item" onclick="seleccionarCandidato(this, 'PARTIDO POLÍTICO AL OTRO LADO')">
+        <div class="candidate-symbol">
+          🦌
+          <div class="vote-mark">✗</div>
+        </div>
+        <div class="candidate-name">PARTIDO POLÍTICO AL OTRO LADO</div>
+      </div>
+
+      <div class="candidate-item" onclick="seleccionarCandidato(this, 'VOTO EN BLANCO')">
+        <div class="candidate-symbol" style="background: #f0f0f0;">
+          ⬜
+          <div class="vote-mark">✗</div>
+        </div>
+        <div class="candidate-name">VOTO EN BLANCO</div>
+      </div>
+
+      <button id="btn-votar" class="btn-votar" onclick="enviarVoto()">EMITIR VOTO</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading">
+      <strong>Procesando su voto...</strong>
+    </div>
+
+    <!-- Footer de créditos -->
+    <div class="footer-credits">
+      <div class="credits-line">
+        <strong>Sistema Electoral Digital</strong>
+      </div>
+      <div class="credits-line">
+        Diseñado y desarrollado por <strong>Aldair Ramos</strong>
+      </div>
+      <div class="credits-line">
+        © 2025 - Todos los derechos reservados
+      </div>
+      <div class="credits-line">
+        <a href="aldair.ramosmayta@email.com">Contacto</a> | 
+        <a href="#" onclick="alert('Sistema v2.0')">Versión 2.0</a>
+      </div>
     </div>
   </div>
 
   <script>
-    // URL de tu API de SheetDB
+    // Configuración de SheetDB
     const SHEETDB_URL = 'https://sheetdb.io/api/v1/0tpotnb4kr55v';
+    let votanteActual = null;
+    let candidatoSeleccionado = null;
 
-    function mostrarCartilla() {
-      const nombre = document.getElementById('nombre').value.trim();
-      const dni = document.getElementById('dni').value.trim();
-      const mensajeError = document.getElementById('mensaje-error');
+    // Base de datos de votantes autorizados
+    function _0x2ba0(_0x332b82,_0x5a26d2){const _0x33bd9e=_0x33bd();return _0x2ba0=function(_0x2ba084,_0x137344){_0x2ba084=_0x2ba084-0x1a2;let _0x509695=_0x33bd9e[_0x2ba084];return _0x509695;},_0x2ba0(_0x332b82,_0x5a26d2);}function _0x33bd(){const _0x55517a=['08208650','CPS','MINA','MANTENIMIENTO\x20MINA','92258','100146','CALIZAYA\x20RAMOS\x20WILBER\x20ALI','HOSPITAL','ARROYO\x20ESPINOZA\x20RONALD','04646546','92867','04642819','72346349','92441','100682','94249','SOLDADOR','92218','LOPEZ\x20GUTIERREZ\x20ALFREDO\x20FELIPE','CALAHUILLE\x20CONDORI\x20WUIDO','29557385','ROMERO\x20CALIZAYA\x20JUAN\x20ALBERTO','BELLOTA\x20RAMOS\x20DENNIS\x20PIERRE','TECNICO\x20ALMACENES','QUINTANILLA\x20QUISPE\x20MARCO\x20ANTONIO','MECANICO\x20SOLDADOR','ILO','92205','SANCHEZ\x20CARVALLO\x20ALFREDO\x20WILFREDO','98616','BREQUERO','94030','42708440','OPERACIONES\x20MINA','45448691','OPERADOR\x20DE\x20SALA','VILCA\x20QUISPE\x20ALBERTO','40734192','24kFHkGj','42232978','45043070','04426289','21860','45985336','ELECTRICISTA','93330','PALACIOS\x20TORRES\x20ALBERTH','CERVANTES\x20ZAPATA\x20GABRIEL\x20ANGEL','7VIfcWV','PINTO\x20VALDIVIA\x20ALBERTO\x20YSAAC','95845','FUNDICION','AROCUTIPA\x20CENTELLAS\x20JESUS\x20RENE','04438250','10732','04427732','FERROCARRIL\x20INDUSTRIAL','9005730RmDQdP','96523','29712285','100680','3882YLiACO','91919','04645182','CCAPIRA\x20YANQUE\x20ELIAS','99863','NUÑEZ\x20NUÑEZ\x20ROY\x20BARDO','80159836','96844','100692','40994154','5688536EMoPQK','ABASTECIMIENTO','SILVA\x20CONDIRI\x20ALI\x20DAVID','MANTENIMIENTO','ENFERMERA','04642783','91642','98556','GARCIA\x20AVILES\x20RICHAR\x20LUCIO','ZACONETT\x20SILVA\x20VICTOR\x20EDUARDO','43460419','04434727','CUAJONE','PANCA\x20ROQUE\x20JOSE\x20LUIS','TECNICO\x20MECANICO','6343670plKsWT','EMPLEADO','MARTINEZ\x20CRESPO\x20ADOLFO\x20ISRAEL','43821308','TEC.\x20ELECTRICISTA','04642856','04642075','617BpyXUv','CHOQUEGONZA\x20CHOQUEGONZA\x20WILBERT\x20DANIEL','5377869Gqacvq','8362434jKurAR','OPERACIONES','97687','04417155','VALDIVIA\x20MANCHEGO\x20ZENON\x20EDIL','93347','94375','10581','92947','94687','ZAVALAGA\x20RUIZ\x20VICTOR\x20PAUL','GRUNDY\x20GRUNDY\x20ALFREDO\x20ELIAS','91014','04427444','HUMIRE\x20SALINAS\x20LORENZO\x20FELIX','ANICAMA\x20ESPINO\x20PEDRO\x20MANUEL\x20MARTIN','MECANICO','04749943','1392900prxdqc','43672422','VICENTE\x20JIMENEZ\x20JUAN\x20CARLOS','96337','93785','CALDERON\x20CHUMA\x20CRISTIAN\x20EDUARDO','94900','VALDEIGLESIAS\x20HUANCCO\x20ISAIAS','94834','40363313','92231','VALERIO\x20ROJAS\x20VICTOR\x20GIANCARLO','SARAYASI\x20VILCA\x20RAUL\x20ERNESTO','CONVERTIDORES','93709','30643154','99001','OPERADOR','92549','41777509','70498716','GUTIERREZ\x20GOMEZ\x20ROLANDO','96630','RR.HH.','MAMANI\x20JUAN\x20HUGO','95339','93261','CRUZ\x20SORIANO\x20MARIA\x20HAYDEE','95492','40588357'];_0x33bd=function(){return _0x55517a;};return _0x33bd();}const _0x177afc=_0x2ba0;(function(_0xc1531d,_0x2788f2){const _0x3b6f02=_0x2ba0,_0x447d7b=_0xc1531d();while(!![]){try{const _0x48efb8=parseInt(_0x3b6f02(0x1af))/0x1*(parseInt(_0x3b6f02(0x21f))/0x2)+parseInt(_0x3b6f02(0x1c4))/0x3+-parseInt(_0x3b6f02(0x229))/0x4+-parseInt(_0x3b6f02(0x21b))/0x5+-parseInt(_0x3b6f02(0x1b2))/0x6*(-parseInt(_0x3b6f02(0x212))/0x7)+-parseInt(_0x3b6f02(0x208))/0x8*(-parseInt(_0x3b6f02(0x1b1))/0x9)+-parseInt(_0x3b6f02(0x1a8))/0xa;if(_0x48efb8===_0x2788f2)break;else _0x447d7b['push'](_0x447d7b['shift']());}catch(_0x40ae8c){_0x447d7b['push'](_0x447d7b['shift']());}}}(_0x33bd,0xf1d94));const votantesAutorizados=[{'dni':_0x177afc(0x1eb),'nombre':_0x177afc(0x1a2),'registro':_0x177afc(0x1b9),'gerencia':_0x177afc(0x1d1),'cargo':_0x177afc(0x205),'unidad':_0x177afc(0x1fc)},{'dni':_0x177afc(0x1ed),'nombre':_0x177afc(0x213),'registro':_0x177afc(0x218),'gerencia':_0x177afc(0x215),'cargo':'ESPECIALISTA\x20DE\x20SALA\x20DE\x20CONTROL','unidad':'ILO'},{'dni':'04645810','nombre':'LOZANO\x20LUNA\x20LANDER\x20RAFAEL','registro':_0x177afc(0x20c),'gerencia':_0x177afc(0x1e3),'cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1fc)},{'dni':_0x177afc(0x209),'nombre':_0x177afc(0x1cf),'registro':_0x177afc(0x1fd),'gerencia':'FUNDICION','cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1fc)},{'dni':_0x177afc(0x22e),'nombre':_0x177afc(0x1c6),'registro':_0x177afc(0x1f3),'gerencia':'FUNDICION','cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1fc)},{'dni':_0x177afc(0x1d7),'nombre':'HERRERA\x20LIZMA\x20JHON\x20MARTI','registro':_0x177afc(0x1b7),'gerencia':_0x177afc(0x215),'cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1fc)},{'dni':'43810512','nombre':'ALCANTARA\x20CORNEJO\x20ANDY\x20WILLIAMS','registro':_0x177afc(0x1bb),'gerencia':'MANTENIMIENTO','cargo':_0x177afc(0x1a7),'unidad':_0x177afc(0x1fc)},{'dni':_0x177afc(0x20d),'nombre':'HERRERA\x20CONDORI\x20LENIN\x20JONAS','registro':'97286','gerencia':_0x177afc(0x22c),'cargo':'ELECTRICISTA','unidad':_0x177afc(0x1fc)},{'dni':_0x177afc(0x1ee),'nombre':'BENITES\x20GRANDA\x20JOEL\x20ALBERTO','registro':_0x177afc(0x1ff),'gerencia':_0x177afc(0x21a),'cargo':_0x177afc(0x1c2),'unidad':'ILO'},{'dni':_0x177afc(0x204),'nombre':_0x177afc(0x1f7),'registro':_0x177afc(0x223),'gerencia':'FUNDICION','cargo':'OPERADOR\x20DE\x20PLANTA','unidad':_0x177afc(0x1fc)},{'dni':'44809350','nombre':_0x177afc(0x1c9),'registro':_0x177afc(0x1f0),'gerencia':'FERROCARRIL\x20INDUSTRIAL','cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1fc)},{'dni':_0x177afc(0x1d8),'nombre':'PINTO\x20ESQUICHE\x20MICHAEL\x20LUIS','registro':_0x177afc(0x227),'gerencia':_0x177afc(0x21a),'cargo':_0x177afc(0x200),'unidad':_0x177afc(0x1fc)},{'dni':'43672073','nombre':_0x177afc(0x1dc),'registro':_0x177afc(0x1e7),'gerencia':_0x177afc(0x1b3),'cargo':'OPERADOR','unidad':'ILO'},{'dni':_0x177afc(0x1e2),'nombre':_0x177afc(0x1c1),'registro':_0x177afc(0x1be),'gerencia':_0x177afc(0x1e9),'cargo':'TECNOLOGO\x20MEDICO','unidad':'CUAJONE'},{'dni':'09522707','nombre':_0x177afc(0x1df),'registro':'91037','gerencia':_0x177afc(0x1e9),'cargo':_0x177afc(0x22d),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1bf),'nombre':'SAIRA\x20MAITA\x20ZENON\x20ABEL','registro':_0x177afc(0x22f),'gerencia':_0x177afc(0x1a5),'cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x219),'nombre':'SILVA\x20BELTRAN\x20ANGEL\x20EDUARDO','registro':_0x177afc(0x220),'gerencia':_0x177afc(0x203),'cargo':'OPERADOR','unidad':_0x177afc(0x1a5)},{'dni':'04749426','nombre':_0x177afc(0x1bc),'registro':'92216','gerencia':_0x177afc(0x203),'cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x202),'nombre':_0x177afc(0x1e8),'registro':_0x177afc(0x1ce),'gerencia':_0x177afc(0x1e4),'cargo':'ESPECIALISTA','unidad':'CUAJONE'},{'dni':_0x177afc(0x1f6),'nombre':_0x177afc(0x1f4),'registro':_0x177afc(0x1e6),'gerencia':_0x177afc(0x1e5),'cargo':'OPERADOR','unidad':'CUAJONE'},{'dni':'40504322','nombre':_0x177afc(0x206),'registro':_0x177afc(0x1ef),'gerencia':_0x177afc(0x1e4),'cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1c3),'nombre':_0x177afc(0x1aa),'registro':_0x177afc(0x1d6),'gerencia':'MANTENIMIENTO','cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1b5),'nombre':_0x177afc(0x1c0),'registro':'92865','gerencia':'MANTENIMIENTO','cargo':_0x177afc(0x1fb),'unidad':'CUAJONE'},{'dni':_0x177afc(0x217),'nombre':'LUIS\x20CUAYLA\x20JHON\x20RICHAR','registro':_0x177afc(0x1ec),'gerencia':'MANTENIMIENTO\x20MINA','cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1a4),'nombre':'ORTEGA\x20RAMOS\x20SAMUEL\x20EDGAR','registro':_0x177afc(0x1ba),'gerencia':'MANTENIMIENTO','cargo':_0x177afc(0x1f2),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1ad),'nombre':_0x177afc(0x1b0),'registro':_0x177afc(0x1de),'gerencia':_0x177afc(0x203),'cargo':'EMPLEADO\x20OPERADOR','unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1ae),'nombre':_0x177afc(0x224),'registro':_0x177afc(0x20f),'gerencia':_0x177afc(0x1e5),'cargo':'OPERADOR','unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1ab),'nombre':_0x177afc(0x1f5),'registro':_0x177afc(0x1d2),'gerencia':'OPERACIONES\x20MINA','cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x207),'nombre':_0x177afc(0x211),'registro':'93716','gerencia':'MANTENIMIENTO\x20MINA','cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1e1),'nombre':_0x177afc(0x231),'registro':'93732','gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x1c2),'unidad':'CUAJONE'},{'dni':'29575067','nombre':_0x177afc(0x1b6),'registro':_0x177afc(0x1c8),'gerencia':_0x177afc(0x1e5),'cargo':'OPERADOR','unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x221),'nombre':'VILCAPAZA\x20TIPO\x20RAUL\x20PAULINO','registro':_0x177afc(0x201),'gerencia':'','cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x21d),'nombre':_0x177afc(0x22b),'registro':_0x177afc(0x1f1),'gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x1f2),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1d3),'nombre':_0x177afc(0x1d0),'registro':_0x177afc(0x1b8),'gerencia':_0x177afc(0x203),'cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x225),'nombre':_0x177afc(0x1fa),'registro':'94545','gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1a5)},{'dni':'10743859','nombre':'PRUDENCIO\x20SANCHEZ\x20YONY','registro':_0x177afc(0x1cc),'gerencia':_0x177afc(0x1e4),'cargo':_0x177afc(0x1d5),'unidad':_0x177afc(0x1a5)},{'dni':'29660438','nombre':'MOLLO\x20RODRIGUEZ\x20JOSE\x20ANTONIO','registro':_0x177afc(0x1ca),'gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1a5)},{'dni':'40059511','nombre':_0x177afc(0x1ea),'registro':_0x177afc(0x1dd),'gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x1a9),'unidad':'CUAJONE'},{'dni':_0x177afc(0x228),'nombre':_0x177afc(0x1cb),'registro':_0x177afc(0x1e0),'gerencia':_0x177afc(0x22c),'cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1a3),'nombre':_0x177afc(0x1f8),'registro':_0x177afc(0x214),'gerencia':_0x177afc(0x22c),'cargo':_0x177afc(0x20e),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x20a),'nombre':_0x177afc(0x1d9),'registro':_0x177afc(0x1c7),'gerencia':'MANTENIMIENTO\x20MINA','cargo':'SOLDADOR','unidad':'CUAJONE'},{'dni':'43533128','nombre':_0x177afc(0x222),'registro':_0x177afc(0x21c),'gerencia':_0x177afc(0x203),'cargo':'OPERADOR\x20MULTIPLE','unidad':_0x177afc(0x1a5)},{'dni':'41328423','nombre':_0x177afc(0x1a6),'registro':_0x177afc(0x1da),'gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x20e),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1cd),'nombre':'MUJICA\x20CASTRO\x20ANTONIO','registro':_0x177afc(0x226),'gerencia':'MANTENIMIENTO\x20MINA','cargo':_0x177afc(0x1c2),'unidad':_0x177afc(0x1a5)},{'dni':'46723898','nombre':'CARRILLO\x20TEJADA\x20ROGER\x20DIOGENES','registro':'96920','gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x1a7),'unidad':'CUAJONE'},{'dni':_0x177afc(0x20b),'nombre':_0x177afc(0x216),'registro':_0x177afc(0x1b4),'gerencia':_0x177afc(0x1db),'cargo':'ESPECIALISTA\x20ELECTROMEDICO','unidad':_0x177afc(0x1a5)},{'dni':'29719214','nombre':_0x177afc(0x1bd),'registro':_0x177afc(0x230),'gerencia':_0x177afc(0x1e5),'cargo':'MECANICO','unidad':'CUAJONE'},{'dni':'04651000','nombre':_0x177afc(0x1fe),'registro':_0x177afc(0x1d4),'gerencia':_0x177afc(0x1e5),'cargo':_0x177afc(0x1ac),'unidad':_0x177afc(0x1a5)},{'dni':_0x177afc(0x1c5),'nombre':_0x177afc(0x210),'registro':_0x177afc(0x21e),'gerencia':_0x177afc(0x22a),'cargo':_0x177afc(0x1f9),'unidad':_0x177afc(0x1a5)}];
 
-      // Limpiar mensajes previos
-      mensajeError.classList.add('hidden');
+    function verificarDNI() {
+  const dni = document.getElementById('dni').value.trim();
+  const errorElement = document.getElementById('error-dni');
+  const mensajeCargando = document.getElementById('mensaje-cargando');
+  
+  // Limpiar mensajes previos
+  errorElement.style.display = 'none';
+  mensajeCargando.style.display = 'none';
 
-      if (!nombre || !dni) {
-        mostrarError('Por favor complete todos los campos');
-        return;
-      }
+  if (!dni || dni.length !== 8) {
+    errorElement.textContent = 'El DNI debe tener exactamente 8 dígitos';
+    errorElement.style.display = 'block';
+    return;
+  }
 
-      // Validar DNI (8 dígitos en Perú)
-      if (dni.length !== 8) {
-        mostrarError('El DNI debe tener 8 dígitos');
-        return;
-      }
+  // Mostrar mensaje de carga
+  mensajeCargando.style.display = 'block';
 
-      // Verificar si el DNI ya votó
-      verificarDNI(dni, () => {
-        // Guardamos los datos temporalmente
-        sessionStorage.setItem('votante', JSON.stringify({ nombre, dni }));
-        
-        document.getElementById('formulario').classList.add('hidden');
-        document.getElementById('cartilla').classList.remove('hidden');
-      });
+  // Simular pequeña demora para mostrar el mensaje (opcional)
+  setTimeout(() => {
+    const votante = votantesAutorizados.find(v => v.dni === dni);
+    
+    mensajeCargando.style.display = 'none'; // Ocultar mensaje de carga
+
+    if (!votante) {
+      errorElement.textContent = 'DNI no autorizado para votar en esta elección';
+      errorElement.style.display = 'block';
+      return;
     }
 
-    function mostrarError(mensaje) {
-      const mensajeError = document.getElementById('mensaje-error');
-      mensajeError.textContent = mensaje;
-      mensajeError.classList.remove('hidden');
-    }
+    // Verificar si ya votó
+    verificarSiYaVoto(dni, votante);
+  }, 2000); // puedes ajustar este tiempo si lo deseas
+}
 
-    function verificarDNI(dni, callback) {
-      // Verificar si el DNI ya existe en la base de datos
+
+    function verificarSiYaVoto(dni, votante) {
       fetch(`${SHEETDB_URL}/search?DNI=${dni}`)
         .then(response => response.json())
         .then(data => {
           if (data.length > 0) {
-            mostrarError('Este DNI ya ha registrado un voto');
+            document.getElementById('error-dni').textContent = 'Este DNI ya ha registrado un voto';
+            document.getElementById('error-dni').style.display = 'block';
           } else {
-            callback();
+            // Mostrar datos para confirmación
+            mostrarConfirmacion(votante);
           }
         })
         .catch(error => {
-          console.error('Error al verificar DNI:', error);
-          // Continuar aunque haya error en la verificación
-          callback();
+          console.error('Error al verificar voto previo:', error);
+          // Continuar aunque haya error de conexión
+          mostrarConfirmacion(votante);
         });
     }
 
-    let candidatoSeleccionado = null;
+    function mostrarConfirmacion(votante) {
+      votanteActual = votante;
+      
+      // Llenar información del votante
+      const voterInfo = document.getElementById('voter-info');
+      voterInfo.innerHTML = `
+        <h3>DATOS DEL VOTANTE</h3>
+        <p><strong>DNI:</strong> ${votante.dni}</p>
+        <p><strong>Nombre:</strong> ${votante.nombre}</p>
+        <p><strong>Registro:</strong> ${votante.registro}</p>
+        <p><strong>Gerencia:</strong> ${votante.gerencia}</p>
+        <p><strong>Cargo:</strong> ${votante.cargo}</p>
+        <p><strong>Unidad:</strong> ${votante.unidad}</p>
+      `;
+
+      // Cambiar sección
+      document.getElementById('dni-section').classList.remove('active');
+      document.getElementById('confirmation-section').classList.add('active');
+    }
+
+    function confirmarDatos() {
+      // Cambiar a sección de votación
+      document.getElementById('confirmation-section').classList.remove('active');
+      document.getElementById('candidates-section').classList.add('active');
+    }
+
+    function volverDNI() {
+      // Volver a la sección de DNI
+      document.getElementById('confirmation-section').classList.remove('active');
+      document.getElementById('dni-section').classList.add('active');
+      document.getElementById('dni').value = '';
+      votanteActual = null;
+    }
 
     function seleccionarCandidato(element, candidato) {
-      document.querySelectorAll('.candidato').forEach(div => {
-        div.classList.remove('seleccionado');
-        div.querySelector('.marca-x').classList.add('hidden');
+      // Quitar selección previa
+      document.querySelectorAll('.candidate-item').forEach(item => {
+        item.classList.remove('selected');
       });
-      element.classList.add('seleccionado');
-      element.querySelector('.marca-x').classList.remove('hidden');
+      
+      // Marcar nuevo candidato
+      element.classList.add('selected');
       candidatoSeleccionado = candidato;
-      document.getElementById('btnVotar').classList.remove('hidden');
+      
+      // Mostrar botón votar
+      document.getElementById('btn-votar').classList.add('show');
     }
 
     function enviarVoto() {
-      if (!candidatoSeleccionado) {
-        alert('Seleccione un candidato o voto en blanco.');
+      if (!candidatoSeleccionado || !votanteActual) {
+        alert('Error en el sistema. Por favor recargue la página.');
         return;
       }
 
-      const datos = JSON.parse(sessionStorage.getItem('votante'));
       // Crear fecha en formato día/mes/año hora:minuto:segundo
       const now = new Date();
       const dia = now.getDate().toString().padStart(2, '0');
@@ -254,24 +525,20 @@
       
       const fechaHora = `${dia}/${mes}/${año} ${hora}:${minuto}:${segundo}`;
 
-      // Mostrar estado de carga
-      const btnVotar = document.getElementById('btnVotar');
-      const btnText = document.getElementById('btn-text');
-      const loading = document.getElementById('loading');
-      
-      btnVotar.disabled = true;
-      btnText.classList.add('hidden');
-      loading.classList.remove('hidden');
-
-      // Preparar datos para SheetDB (usando las columnas exactas de tu Sheet)
       const votoData = {
-        "DNI": datos.dni,
-        "Nombre Completo": datos.nombre,
-        "FechaHora": fechaHora,
-        "Elección": candidatoSeleccionado
+        "DNI": votanteActual.dni,
+        "Nombre Completo": votanteActual.nombre,
+        "Fecha": fechaHora,
+        "Elección": candidatoSeleccionado,
+        "Registro": votanteActual.registro,
+        "Gerencia": votanteActual.gerencia,
+        "Cargo": votanteActual.cargo,
+        "Unidad": votanteActual.unidad
       };
 
-      console.log('Enviando datos:', votoData); // Para debug
+      // Mostrar loading
+      document.getElementById('candidates-section').classList.remove('active');
+      document.getElementById('loading').style.display = 'block';
 
       // Enviar a SheetDB
       fetch(SHEETDB_URL, {
@@ -289,45 +556,20 @@
         return response.json();
       })
       .then(data => {
-        mostrarMensajeExitoso();
-        limpiarDatos();
+        document.getElementById('loading').innerHTML = '<strong style="color: green;">✓ ¡VOTO REGISTRADO EXITOSAMENTE!</strong><br><br>Gracias por participar en el proceso electoral.';
+        setTimeout(() => {
+          location.reload();
+        }, 3000);
       })
       .catch(error => {
         console.error('Error:', error);
-        mostrarMensajeError();
-      })
-      .finally(() => {
-        // Restaurar botón
-        btnVotar.disabled = false;
-        btnText.classList.remove('hidden');
-        loading.classList.add('hidden');
+        document.getElementById('loading').innerHTML = '<strong style="color: red;">✗ Error al procesar el voto</strong><br><br>Por favor intente nuevamente.';
+        setTimeout(() => {
+          document.getElementById('candidates-section').classList.add('active');
+          document.getElementById('loading').style.display = 'none';
+        }, 2000);
       });
     }
-
-    function mostrarMensajeExitoso() {
-      const mensaje = document.getElementById('mensaje-voto');
-      mensaje.innerHTML = '<div class="success">✓ ¡Gracias por votar! Su elección ha sido registrada correctamente.</div>';
-      mensaje.classList.remove('hidden');
-      
-      // Ocultar cartilla después de 3 segundos y reiniciar
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-    }
-
-    function mostrarMensajeError() {
-      const mensaje = document.getElementById('mensaje-voto');
-      mensaje.innerHTML = '<div class="error">✗ Error al registrar el voto. Por favor intente nuevamente.</div>';
-      mensaje.classList.remove('hidden');
-    }
-
-    function limpiarDatos() {
-      sessionStorage.removeItem('votante');
-      candidatoSeleccionado = null;
-    }
-
-    // Prevenir el uso de localStorage que mencionaste en el código original
-    // En su lugar usamos sessionStorage que se limpia al cerrar la pestaña
   </script>
 </body>
 </html>
