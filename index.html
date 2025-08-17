@@ -398,7 +398,7 @@
 
   <script>
     // Configuración de SheetDB
-    const SHEETDB_URL = 'https://sheetdb.io/api/v1/0tpotnb4kr55v';
+    const SHEETDB_URL = 'https://sheetdb.io/api/v1/9816xrzrwjf2c';
     let votanteActual = null;
     let candidatoSeleccionado = null;
 
@@ -509,67 +509,66 @@
     }
 
     function enviarVoto() {
-      if (!candidatoSeleccionado || !votanteActual) {
-        alert('Error en el sistema. Por favor recargue la página.');
-        return;
-      }
+  if (!candidatoSeleccionado || !votanteActual) {
+    alert('Error en el sistema. Por favor recargue la página.');
+    return;
+  }
 
-      // Crear fecha en formato día/mes/año hora:minuto:segundo
-      const now = new Date();
-      const dia = now.getDate().toString().padStart(2, '0');
-      const mes = (now.getMonth() + 1).toString().padStart(2, '0');
-      const año = now.getFullYear();
-      const hora = now.getHours().toString().padStart(2, '0');
-      const minuto = now.getMinutes().toString().padStart(2, '0');
-      const segundo = now.getSeconds().toString().padStart(2, '0');
-      
-      const fechaHora = `${dia}/${mes}/${año} ${hora}:${minuto}:${segundo}`;
+  // Crear fecha en formato día/mes/año hora:minuto:segundo
+  const now = new Date();
+  const dia = now.getDate().toString().padStart(2, '0');
+  const mes = (now.getMonth() + 1).toString().padStart(2, '0');
+  const año = now.getFullYear();
+  const hora = now.getHours().toString().padStart(2, '0');
+  const minuto = now.getMinutes().toString().padStart(2, '0');
+  const segundo = now.getSeconds().toString().padStart(2, '0');
+  
+  const fechaHora = `${dia}/${mes}/${año} ${hora}:${minuto}:${segundo}`;
 
-      const votoData = {
-        "DNI": votanteActual.dni,
-        "Nombre Completo": votanteActual.nombre,
-        "Fecha": fechaHora,
-        "Elección": candidatoSeleccionado,
-        "Registro": votanteActual.registro,
-        "Gerencia": votanteActual.gerencia,
-        "Cargo": votanteActual.cargo,
-        "Unidad": votanteActual.unidad
-      };
+  // DATOS MODIFICADOS - Solo los campos que necesitas
+  const votoData = {
+    "DNI": votanteActual.dni,
+    "Nombre Completo": votanteActual.nombre,
+    "Fecha": fechaHora,
+    "Elección": candidatoSeleccionado,
+    "Unidad": votanteActual.unidad
+  };
 
-      // Mostrar loading
-      document.getElementById('candidates-section').classList.remove('active');
-      document.getElementById('loading').style.display = 'block';
+  // Mostrar loading
+  document.getElementById('candidates-section').classList.remove('active');
+  document.getElementById('loading').style.display = 'block';
 
-      // Enviar a SheetDB
-      fetch(SHEETDB_URL, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(votoData)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        document.getElementById('loading').innerHTML = '<strong style="color: green;">✓ ¡VOTO REGISTRADO EXITOSAMENTE!</strong><br><br>Gracias por participar en el proceso electoral.';
-        setTimeout(() => {
-          location.reload();
-        }, 3000);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('loading').innerHTML = '<strong style="color: red;">✗ Error al procesar el voto</strong><br><br>Por favor intente nuevamente.';
-        setTimeout(() => {
-          document.getElementById('candidates-section').classList.add('active');
-          document.getElementById('loading').style.display = 'none';
-        }, 2000);
-      });
+  // Enviar a SheetDB
+  fetch(SHEETDB_URL, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(votoData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
     }
+    return response.json();
+  })
+  .then(data => {
+    document.getElementById('loading').innerHTML = '<strong style="color: green;">✓ ¡VOTO REGISTRADO EXITOSAMENTE!</strong><br><br>Gracias por participar en el proceso electoral.';
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    document.getElementById('loading').innerHTML = '<strong style="color: red;">✗ Error al procesar el voto</strong><br><br>Por favor intente nuevamente.';
+    setTimeout(() => {
+      document.getElementById('candidates-section').classList.add('active');
+      document.getElementById('loading').style.display = 'none';
+    }, 2000);
+  });
+}
   </script>
 </body>
 </html>
+
