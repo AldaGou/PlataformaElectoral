@@ -317,61 +317,29 @@
     </div>
 
     <!-- Sección 3: Lista de candidatos -->
-    <div id="candidates-section" class="section">
-      <div class="instructions" style="background: #d0d0d0; margin: -20px -20px 20px -20px; padding: 8px 15px;">
-        Selecciona un candidato y haz clic en “EMITIR VOTO” para continuar.
-      </div>
+<div id="candidates-section" class="section">
+  <div class="instructions" style="background: #d0d0d0; margin: -20px -20px 20px -20px; padding: 8px 15px;">
+    Selecciona una opción y haz clic en "EMITIR VOTO" para continuar.
+  </div>
 
-      <div class="candidate-item" onclick="seleccionarCandidato(this, 'MOVIMIENTO AMANECER DE NUEVO')">
-        <div class="candidate-symbol">
-          🏠
-          <div class="vote-mark">✗</div>
-        </div>
-        <div class="candidate-name">MOVIMIENTO AMANECER DE NUEVO</div>
-      </div>
-
-      <div class="candidate-item" onclick="seleccionarCandidato(this, 'MOVIMIENTO PARAÍSO ASTRAL')">
-        <div class="candidate-symbol">
-          📋
-          <div class="vote-mark">✗</div>
-        </div>
-        <div class="candidate-name">MOVIMIENTO PARAÍSO ASTRAL</div>
-      </div>
-
-      <div class="candidate-item" onclick="seleccionarCandidato(this, 'MOVIMIENTO VENDRÁN TIEMPOS MEJORES')">
-        <div class="candidate-symbol">
-          👑
-          <div class="vote-mark">✗</div>
-        </div>
-        <div class="candidate-name">MOVIMIENTO VENDRÁN TIEMPOS MEJORES</div>
-      </div>
-
-      <div class="candidate-item" onclick="seleccionarCandidato(this, 'PARTIDO POLÍTICO EN LA DISTANCIA')">
-        <div class="candidate-symbol">
-          🎮
-          <div class="vote-mark">✗</div>
-        </div>
-        <div class="candidate-name">PARTIDO POLÍTICO EN LA DISTANCIA</div>
-      </div>
-
-      <div class="candidate-item" onclick="seleccionarCandidato(this, 'PARTIDO POLÍTICO AL OTRO LADO')">
-        <div class="candidate-symbol">
-          🦌
-          <div class="vote-mark">✗</div>
-        </div>
-        <div class="candidate-name">PARTIDO POLÍTICO AL OTRO LADO</div>
-      </div>
-
-      <div class="candidate-item" onclick="seleccionarCandidato(this, 'VOTO EN BLANCO')">
-        <div class="candidate-symbol" style="background: #f0f0f0;">
-          ⬜
-          <div class="vote-mark">✗</div>
-        </div>
-        <div class="candidate-name">VOTO EN BLANCO</div>
-      </div>
-
-      <button id="btn-votar" class="btn-votar" onclick="enviarVoto()">EMITIR VOTO</button>
+  <div class="candidate-item" onclick="seleccionarCandidato(this, 'UNIDAD SINDICAL')">
+    <div class="candidate-symbol">
+      ⬜
+      <div class="vote-mark">✗</div>
     </div>
+    <div class="candidate-name">UNIDAD SINDICAL</div>
+  </div>
+
+  <div class="candidate-item" onclick="seleccionarCandidato(this, 'VOTO EN BLANCO')">
+    <div class="candidate-symbol" style="background: #f0f0f0;">
+      ⬜
+      <div class="vote-mark">✗</div>
+    </div>
+    <div class="candidate-name">VOTO EN BLANCO</div>
+  </div>
+
+  <button id="btn-votar" class="btn-votar" onclick="enviarVoto()">EMITIR VOTO</button>
+</div>
 
     <!-- Loading -->
     <div id="loading" class="loading">
@@ -571,4 +539,5 @@
   </script>
 </body>
 </html>
+
 
