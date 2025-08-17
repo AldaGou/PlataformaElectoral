@@ -487,24 +487,41 @@
   const fechaPerú = new Date(now.toLocaleString("en-US", {timeZone: "America/Lima"}));
   
   // VERIFICACIÓN DE HORARIO Y FECHA
-  const añoVotacion = 2025;
-  const mesVotacion = 7; // Agosto (0-indexado)
-  const díaVotacion = 16; // Martes 19
-  const horaActual = fechaPerú.getHours();
+  // VERIFICACIÓN DE HORARIO Y FECHA
+const añoVotacion = 2025;
+const mesVotacion = 7; // Agosto (0-indexado)
+const díaVotacion = 19; // Martes 19
+const horaActual = fechaPerú.getHours();
+const minutoActual = fechaPerú.getMinutes();
+
+// Verificar que sea el día correcto
+if (fechaPerú.getDate() !== díaVotacion || 
+    fechaPerú.getMonth() !== mesVotacion || 
+    fechaPerú.getFullYear() !== añoVotacion) {
+  alert('⛔ VOTACIÓN NO DISPONIBLE\n\nLa votación solo está disponible el:\n📅 Martes 19 de agosto de 2025\n🕐 De 8:00 AM a 9:00 PM\n\nPor favor regrese en la fecha y horario indicado.');
+  return;
+}
+
+// Verificar horario: 8:00 AM (8) a 9:00 PM (21)
+if (horaActual < 8) {
+  const horasRestantes = 8 - horaActual;
+  const minutosRestantes = horasRestantes === 1 ? 60 - minutoActual : 0;
+  let tiempoRestante = '';
   
-  // Verificar que sea el día correcto
-  if (fechaPerú.getDate() !== díaVotacion || 
-      fechaPerú.getMonth() !== mesVotacion || 
-      fechaPerú.getFullYear() !== añoVotacion) {
-    alert('⛔ La votación solo está disponible el martes 19 de agosto de 2025 de 8:00 AM a 9:00 PM');
-    return;
+  if (horasRestantes > 1) {
+    tiempoRestante = `${horasRestantes} horas`;
+  } else if (horasRestantes === 1 && minutosRestantes > 0) {
+    tiempoRestante = `${minutosRestantes} minutos`;
+  } else {
+    tiempoRestante = `${horasRestantes} hora`;
   }
   
-  // Verificar horario: 8:00 AM (8) a 9:00 PM (21)
-  if (horaActual < 8 || horaActual >= 23) {
-    alert('⛔ La votación solo está disponible de 8:00 AM a 9:00 PM');
-    return;
-  }
+  alert(`⏰ VOTACIÓN AÚN NO INICIADA\n\nLa votación comenzará a las 8:00 AM\n⏳ Faltan aproximadamente: ${tiempoRestante}\n\nPor favor regrese cuando inicie el horario de votación.`);
+  return;
+} else if (horaActual >= 21) {
+  alert('⛔ VOTACIÓN FINALIZADA\n\nEl horario de votación ha terminado.\n🕘 La votación estuvo disponible de 8:00 AM a 9:00 PM\n\nGracias por su interés en participar.');
+  return;
+}
 
   // Crear fecha en formato día/mes/año hora:minuto:segundo
   const dia = fechaPerú.getDate().toString().padStart(2, '0');
@@ -563,6 +580,7 @@
   </script>
 </body>
 </html>
+
 
 
 
