@@ -493,9 +493,10 @@
   
   const fechaHora = `${dia}/${mes}/${año} ${hora}:${minuto}:${segundo}`;
 
-  // DATOS MODIFICADOS - Solo los campos que necesitas
+  // DATOS CON REGISTRO INCLUIDO DESPUÉS DEL DNI
   const votoData = {
     "DNI": votanteActual.dni,
+    "Registro": votanteActual.registro,  // ← AÑADIDO EL REGISTRO
     "Nombre Completo": votanteActual.nombre,
     "Fecha": fechaHora,
     "Elección": candidatoSeleccionado,
@@ -539,5 +540,6 @@
   </script>
 </body>
 </html>
+
 
 
