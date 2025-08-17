@@ -482,21 +482,44 @@
     return;
   }
 
-  // Crear fecha en formato día/mes/año hora:minuto:segundo
+  // Crear fecha actual en zona horaria de Perú (UTC-5)
   const now = new Date();
-  const dia = now.getDate().toString().padStart(2, '0');
-  const mes = (now.getMonth() + 1).toString().padStart(2, '0');
-  const año = now.getFullYear();
-  const hora = now.getHours().toString().padStart(2, '0');
-  const minuto = now.getMinutes().toString().padStart(2, '0');
-  const segundo = now.getSeconds().toString().padStart(2, '0');
+  const fechaPerú = new Date(now.toLocaleString("en-US", {timeZone: "America/Lima"}));
+  
+  // VERIFICACIÓN DE HORARIO Y FECHA
+  const añoVotacion = 2025;
+  const mesVotacion = 7; // Agosto (0-indexado)
+  const díaVotacion = 19; // Martes 19
+  const horaActual = fechaPerú.getHours();
+  
+  // Verificar que sea el día correcto
+  if (fechaPerú.getDate() !== díaVotacion || 
+      fechaPerú.getMonth() !== mesVotacion || 
+      fechaPerú.getFullYear() !== añoVotacion) {
+    alert('⛔ La votación solo está disponible el martes 19 de agosto de 2025');
+    return;
+  }
+  
+  // Verificar horario: 8:00 AM (8) a 9:00 PM (21)
+  if (horaActual < 8 || horaActual >= 21) {
+    alert('⛔ La votación solo está disponible de 8:00 AM a 9:00 PM (hora de Perú)');
+    return;
+  }
+
+  // Crear fecha en formato día/mes/año hora:minuto:segundo
+  const dia = fechaPerú.getDate().toString().padStart(2, '0');
+  const mes = (fechaPerú.getMonth() + 1).toString().padStart(2, '0');
+  const año = fechaPerú.getFullYear();
+  const hora = fechaPerú.getHours().toString().padStart(2, '0');
+  const minuto = fechaPerú.getMinutes().toString().padStart(2, '0');
+  const segundo = fechaPerú.getSeconds().toString().padStart(2, '0');
   
   const fechaHora = `${dia}/${mes}/${año} ${hora}:${minuto}:${segundo}`;
 
-  // DATOS CON REGISTRO INCLUIDO DESPUÉS DEL DNI
+  // DATOS CON REGISTRO INCLUIDO
   const votoData = {
     "DNI": votanteActual.dni,
-    "Registro": votanteActual.registro,  // ← AÑADIDO EL REGISTRO
+    "Registro": votanteActual.registro,
     "Nombre Completo": votanteActual.nombre,
     "Fecha": fechaHora,
     "Elección": candidatoSeleccionado,
@@ -540,6 +563,7 @@
   </script>
 </body>
 </html>
+
 
 
 
