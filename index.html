@@ -490,7 +490,7 @@
   // VERIFICACIÓN DE HORARIO Y FECHA
 const añoVotacion = 2025;
 const mesVotacion = 7; // Agosto (0-indexado)
-const díaVotacion = 20; // Martes 19
+const díaVotacion = 21; // Martes 19
 const horaActual = fechaPerú.getHours();
 const minutoActual = fechaPerú.getMinutes();
 
@@ -498,7 +498,7 @@ const minutoActual = fechaPerú.getMinutes();
 if (fechaPerú.getDate() !== díaVotacion || 
     fechaPerú.getMonth() !== mesVotacion || 
     fechaPerú.getFullYear() !== añoVotacion) {
-  alert('⛔ VOTACIÓN NO DISPONIBLE\n\nLa votación solo está disponible el:\n📅 Martes 20 de agosto de 2025\n🕐 De 8:00 AM a 9:00 PM\n\nPor favor regrese en la fecha y horario indicado.');
+  alert('⛔ VOTACIÓN NO DISPONIBLE\n\nLa votación solo está disponible el:\n📅 21 de agosto de 2025\n🕐 De 8:00 AM a 9:00 PM\n\nPor favor regrese en la fecha y horario indicado.');
   return;
 }
 
@@ -580,6 +580,7 @@ if (horaActual < 8) {
   </script>
 </body>
 </html>
+
 
 
 
